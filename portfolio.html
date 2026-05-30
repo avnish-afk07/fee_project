@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Game — Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { overflow-x: hidden; min-height: 100vh; }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 88vh;
+            gap: 60px;
+            padding-top: 20px;
+        }
+
+        .hero-content { flex: 1; }
+
+        .unlock-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,255,136,0.08);
+            border: 1px solid rgba(0,255,136,0.4);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-family: var(--pixel-font);
+            font-size: 0.5rem;
+            color: var(--neon-green);
+            margin-bottom: 28px;
+        }
+
+        .unlock-badge .dot {
+            width: 7px;
+            height: 7px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--neon-green);
+            animation: pulse 1s infinite;
+        }
+
+        .hero h1 {
+            font-size: 2.4rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #fff 40%, var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .subtitle {
+            font-size: 1.15rem;
+            color: #bbb;
+            margin-bottom: 32px;
+            border-left: 3px solid var(--neon-pink);
+            padding-left: 16px;
+            line-height: 1.6;
+        }
+
+        .hero-visual { flex: 1; display: flex; justify-content: center; }
+
+        /* RPG stats card */
+        .stats-card {
+            width: 340px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            padding: 28px;
+            animation: float 5s ease-in-out infinite;
+            box-shadow: 0 0 40px rgba(188,19,254,0.2);
+            backdrop-filter: blur(14px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 22px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .card-info h3 {
+            font-size: 0.75rem;
+            color: var(--neon-pink);
+            margin-bottom: 4px;
+        }
+
+        .card-info p { font-size: 0.8rem; color: #888; }
+
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--pixel-font);
+            font-size: 0.55rem;
+            margin: 16px 0 6px;
+            color: #aaa;
+        }
+
+        .stat-label span:last-child { color: var(--neon-cyan); }
+
+        /* Player score ribbon */
+        .score-ribbon {
+            background: linear-gradient(135deg, rgba(51,204,255,0.06), rgba(188,19,254,0.06));
+            border: 1px solid rgba(51,204,255,0.2);
+            border-radius: 10px;
+            padding: 20px 26px;
+            margin-bottom: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .ribbon-msg {
+            font-family: var(--pixel-font);
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            line-height: 2;
+        }
+
+        .ribbon-msg span { color: var(--neon-green); }
+
+        .ribbon-stats { display: flex; gap: 28px; }
+        .r-stat .r-label { font-family: var(--pixel-font); font-size: 0.45rem; color: #555; margin-bottom: 4px; }
+        .r-stat .r-val   { font-family: var(--pixel-font); font-size: 0.8rem; }
+
+        /* ── ABOUT ── */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .about-text { font-size: 1.05rem; color: #ccc; line-height: 1.9; }
+        .about-text p { margin-bottom: 14px; }
+
+        .about-text strong {
+            color: var(--neon-cyan);
+            font-weight: 600;
+        }
+
+        /* ── SKILLS ── */
+        .skills-section { margin-bottom: 80px; }
+
+        .skill-group { margin-bottom: 28px; }
+
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--pixel-font);
+            font-size: 0.55rem;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+
+        .skill-name span:last-child { color: var(--neon-pink); }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .skill-tag {
+            font-family: var(--pixel-font);
+            font-size: 0.5rem;
+            padding: 7px 12px;
+            background: rgba(188,19,254,0.12);
+            border: 1px solid rgba(188,19,254,0.4);
+            border-radius: 3px;
+            color: #ddd;
+            transition: 0.2s;
+        }
+
+        .skill-tag:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            background: rgba(51,204,255,0.08);
+            transform: translateY(-2px);
+        }
+
+        /* ── PROJECTS ── */
+        .projects-section { margin-bottom: 80px; }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .project-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 26px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 60%, rgba(51,204,255,0.04));
+            pointer-events: none;
+        }
+
+        .project-card:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(51,204,255,0.04);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(51,204,255,0.12);
+        }
+
+        .project-card .proj-tag {
+            font-family: var(--pixel-font);
+            font-size: 0.45rem;
+            color: var(--neon-purple);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .project-card h4 {
+            font-size: 0.75rem;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .project-card p {
+            font-size: 0.9rem;
+            color: #aaa;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .tech-tag {
+            font-size: 0.7rem;
+            padding: 4px 9px;
+            background: rgba(188,19,254,0.15);
+            border: 1px solid rgba(188,19,254,0.35);
+            border-radius: 3px;
+            color: #ccc;
+        }
+
+        /* ── ACHIEVEMENTS ── */
+        .achievements-section { margin-bottom: 80px; }
+
+        .ach-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .ach-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: 0.25s;
+            opacity: 0.35;
+        }
+
+        .ach-card.earned {
+            opacity: 1;
+            border-color: rgba(255,230,0,0.35);
+            box-shadow: 0 0 12px rgba(255,230,0,0.08);
+        }
+
+        .ach-card.earned:hover {
+            border-color: rgba(255,230,0,0.7);
+            transform: translateY(-3px);
+        }
+
+        .ach-icon { font-size: 1.8rem; }
+
+        .ach-info .ach-title {
+            font-family: var(--pixel-font);
+            font-size: 0.55rem;
+            color: #ffe600;
+            margin-bottom: 4px;
+        }
+
+        .ach-info .ach-desc { font-size: 0.78rem; color: #777; }
+        .ach-card.earned .ach-info .ach-desc { color: #aaa; }
+
+        /* ── CONTACT ── */
+        .contact-section { text-align: center; padding: 40px 0 20px; }
+
+        .contact-section p {
+            font-size: 1rem;
+            color: #aaa;
+            margin-bottom: 28px;
+            line-height: 1.8;
+        }
+
+        .contact-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+        .contact-link {
+            font-family: var(--pixel-font);
+            font-size: 0.6rem;
+            padding: 13px 22px;
+            border: 2px solid rgba(51,204,255,0.4);
+            color: var(--neon-cyan);
+            text-decoration: none;
+            border-radius: 4px;
+            transition: 0.25s;
+            cursor: pointer;
+        }
+
+        .contact-link:hover {
+            background: rgba(51,204,255,0.1);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 12px rgba(51,204,255,0.2);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            font-family: var(--pixel-font);
+            font-size: 0.5rem;
+            color: #333;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; padding-top: 40px; gap: 40px; }
+            .hero h1 { font-size: 1.6rem; }
+            .hero-visual { width: 100%; }
+            .stats-card { width: 100%; }
+            .about-grid { grid-template-columns: 1fr; }
+            .ribbon-stats { flex-wrap: wrap; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="cursor-wisp"></div>
+    <div id="cursor-trail"></div>
+    <div id="achievement-toast"></div>
+
+    <div class="container">
+
+        <!-- NAV -->
+        <nav class="main-nav">
+            <div class="nav-logo">PLAYER_1</div>
+            <div class="nav-links">
+                <a href="#about">ABOUT</a>
+                <a href="#skills">SKILLS</a>
+                <a href="#projects">PROJECTS</a>
+                <a href="#achievements">TROPHIES</a>
+                <div class="player-hud">
+                    <div class="dot"></div>
+                    <span id="nav-player">PLAYER</span>
+                </div>
+                <button onclick="Auth.logout()">LOGOUT</button>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="unlock-badge">
+                    <div class="dot"></div>
+                    PORTFOLIO UNLOCKED VIA GAME
+                </div>
+
+                <h1>LEVEL UP<br><span style="-webkit-text-fill-color:var(--neon-pink); color:var(--neon-pink);">YOUR WEB</span></h1>
+                <p class="subtitle">Crafting neon-lit digital experiences with<br>pixel-perfect precision and developer magic.</p>
+
+                <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                    <a href="#projects" class="rpg-btn">VIEW PROJECTS</a>
+                    <button class="rpg-btn secondary" onclick="navigate('game.html')">PLAY AGAIN ↺</button>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="stats-card">
+                    <div class="card-header">
+                        <div class="avatar">🧙</div>
+                        <div class="card-info">
+                            <h3 id="card-username">FRONTEND WIZARD</h3>
+                            <p>Class: Developer</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-label"><span>HTML / CSS</span><span id="s-html">92/100</span></div>
+                    <div class="pixel-bar-wrap"><div class="pixel-bar-fill" style="width:92%"></div></div>
+
+                    <div class="stat-label"><span>JavaScript</span><span id="s-js">85/100</span></div>
+                    <div class="pixel-bar-wrap"><div class="pixel-bar-fill" style="width:85%; background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple))"></div></div>
+
+                    <div class="stat-label"><span>UI/UX Design</span><span>78/100</span></div>
+                    <div class="pixel-bar-wrap"><div class="pixel-bar-fill" style="width:78%; background:linear-gradient(90deg,var(--neon-purple),var(--neon-pink))"></div></div>
+
+                    <div style="margin-top:20px; font-size:0.78rem; color:#666; font-style:italic; line-height:1.6;">
+                        "Equipped with HTML5, CSS Grid & pure JS magic."
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCORE RIBBON -->
+        <div class="score-ribbon">
+            <div class="ribbon-msg">
+                🏆 Portfolio unlocked by <span id="rb-player">---</span> &nbsp;|&nbsp;
+                Level <span id="rb-level">?</span> &nbsp;•&nbsp;
+                <span id="rb-title">ROOKIE</span>
+            </div>
+            <div class="ribbon-stats">
+                <div class="r-stat">
+                    <div class="r-label">LAST SCORE</div>
+                    <div class="r-val glow-pink" id="rb-score">0</div>
+                </div>
+                <div class="r-stat">
+                    <div class="r-label">HIGH SCORE</div>
+                    <div class="r-val glow-cyan" id="rb-hi">0</div>
+                </div>
+                <div class="r-stat">
+                    <div class="r-label">ACHIEVEMENTS</div>
+                    <div class="r-val glow-purple" id="rb-ach">0/7</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABOUT -->
+        <section id="about">
+            <h2 class="section-title">// ABOUT THE DEV</h2>
+            <div class="about-grid">
+                <div class="about-text">
+                    <p>Hey! I'm a <strong>Frontend Developer</strong> who builds interactive, visually engaging web experiences. I specialise in turning design concepts into pixel-perfect, responsive interfaces.</p>
+                    <p>I treat every project like a game — you need a solid strategy, sharp execution, and an eye for detail to finish with a high score.</p>
+                    <p>When I'm not coding, I'm exploring game design principles, studying UI patterns, and pushing the limits of what CSS can do.</p>
+                </div>
+                <div class="card">
+                    <div style="font-family:var(--pixel-font); font-size:0.6rem; color:var(--neon-cyan); margin-bottom:20px;">PLAYER STATS</div>
+                    <div class="score-row" style="display:flex; justify-content:space-between; font-family:var(--pixel-font); font-size:0.55rem; padding:10px 0; border-bottom:1px dashed rgba(255,255,255,0.08);">
+                        <span style="color:#777">EXP LEVEL</span><span id="abt-level" style="color:var(--neon-green)">—</span>
+                    </div>
+                    <div class="score-row" style="display:flex; justify-content:space-between; font-family:var(--pixel-font); font-size:0.55rem; padding:10px 0; border-bottom:1px dashed rgba(255,255,255,0.08);">
+                        <span style="color:#777">TITLE</span><span id="abt-title" style="color:var(--neon-pink)">—</span>
+                    </div>
+                    <div class="score-row" style="display:flex; justify-content:space-between; font-family:var(--pixel-font); font-size:0.55rem; padding:10px 0; border-bottom:1px dashed rgba(255,255,255,0.08);">
+                        <span style="color:#777">BEST SCORE</span><span id="abt-hs" style="color:var(--neon-cyan)">—</span>
+                    </div>
+                    <div class="score-row" style="display:flex; justify-content:space-between; font-family:var(--pixel-font); font-size:0.55rem; padding:10px 0;">
+                        <span style="color:#777">ACHIEVEMENTS</span><span id="abt-ach" style="color:var(--neon-yellow, #ffe600)">—</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SKILLS -->
+        <section id="skills" style="margin-top:80px;">
+            <h2 class="section-title">// SKILL TREE</h2>
+            <div class="skills-section">
+                <div class="skill-group">
+                    <div class="skill-name"><span>HTML5 / CSS3</span><span>92%</span></div>
+                    <div class="pixel-bar-wrap"><div class="pixel-bar-fill" style="width:92%"></div></div>
+                </div>
+                <div class="skill-group">
+                    <div class="skill-name"><span>JavaScript (ES6+)</span><span>85%</span></div>
+                    <div class="pixel-bar-wrap"><div class="pixel-bar-fill" style="width:85%; background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple))"></div></div>
+                </div>
+                <div class="skill-group">
+                    <div class="skill-name"><span>Responsive Design</span><span>90%</span></div>
+                    <div class="pixel-bar-wrap"><div class="pixel-bar-fill" style="width:90%; background:linear-gradient(90deg,var(--neon-purple),var(--neon-pink))"></div></div>
+                </div>
+                <div class="skill-group">
+                    <div class="skill-name"><span>UI / UX Thinking</span><span>78%</span></div>
+                    <div class="pixel-bar-wrap"><div class="pixel-bar-fill" style="width:78%; background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan))"></div></div>
+                </div>
+                <div class="skill-group">
+                    <div class="skill-name"><span>Git & Version Control</span><span>80%</span></div>
+                    <div class="pixel-bar-wrap"><div class="pixel-bar-fill" style="width:80%"></div></div>
+                </div>
+
+                <div class="skill-tags" style="margin-top:28px;">
+                    <div class="skill-tag">HTML5</div>
+                    <div class="skill-tag">CSS Grid</div>
+                    <div class="skill-tag">Flexbox</div>
+                    <div class="skill-tag">JavaScript</div>
+                    <div class="skill-tag">DOM APIs</div>
+                    <div class="skill-tag">LocalStorage</div>
+                    <div class="skill-tag">CSS Animations</div>
+                    <div class="skill-tag">Fetch API</div>
+                    <div class="skill-tag">Git</div>
+                    <div class="skill-tag">Figma</div>
+                    <div class="skill-tag">Responsive CSS</div>
+                    <div class="skill-tag">Canvas API</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section id="projects">
+            <h2 class="section-title">// SELECT MISSION</h2>
+            <div class="projects-section">
+                <div class="projects-grid">
+
+                    <div class="project-card">
+                        <span class="proj-tag">PROJECT 01 — WEB APP</span>
+                        <h4>CRYSTAL DASHBOARD</h4>
+                        <p>A futuristic analytics dashboard built with pure HTML, CSS, and JS. Features glassmorphism data cards, animated progress rings, and a real-time data simulation engine.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">HTML5</span>
+                            <span class="tech-tag">CSS Grid</span>
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">Canvas API</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <span class="proj-tag">PROJECT 02 — API INTEGRATION</span>
+                        <h4>8-BIT WEATHER APP</h4>
+                        <p>Fetches real-time weather data and displays it using retro pixel-art sprite animations that change based on current conditions — rain, sun, snow, storm.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Fetch API</span>
+                            <span class="tech-tag">CSS Sprites</span>
+                            <span class="tech-tag">JSON</span>
+                            <span class="tech-tag">Geolocation</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <span class="proj-tag">PROJECT 03 — E-COMMERCE</span>
+                        <h4>NEON COMMERCE</h4>
+                        <p>A fully responsive e-commerce landing page with hover-triggered particle effects, smooth scroll transitions, and a dynamic cart system built without any frameworks.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Flexbox</span>
+                            <span class="tech-tag">CSS Animations</span>
+                            <span class="tech-tag">LocalStorage</span>
+                            <span class="tech-tag">Custom Events</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card" style="border-color:rgba(51,204,255,0.3);">
+                        <span class="proj-tag">PROJECT 04 — THIS PROJECT</span>
+                        <h4>PORTFOLIO GAME v2</h4>
+                        <p>A gamified portfolio with login/signup, orb-collection mini-game, score tracking, achievements system, and level progression — all in vanilla HTML/CSS/JS.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Vanilla JS</span>
+                            <span class="tech-tag">LocalStorage</span>
+                            <span class="tech-tag">CSS Animations</span>
+                            <span class="tech-tag">Game Loop</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ACHIEVEMENTS -->
+        <section id="achievements">
+            <h2 class="section-title">// TROPHY ROOM</h2>
+            <div class="achievements-section">
+                <div class="ach-grid" id="ach-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="contact-section">
+            <h2 class="section-title">// SEND MESSAGE</h2>
+            <p>Ready to collaborate? Drop me a message and let's build<br>something extraordinary together.</p>
+            <div class="contact-links">
+                <a class="contact-link" href="mailto:developer@example.com">✉ EMAIL</a>
+                <a class="contact-link" href="#" target="_blank">🔗 GITHUB</a>
+                <a class="contact-link" href="#" target="_blank">💼 LINKEDIN</a>
+            </div>
+        </section>
+
+        <footer>
+            <p>PORTFOLIO GAME v2.0 &nbsp;•&nbsp; BUILT WITH HTML / CSS / JS &nbsp;•&nbsp; NO FRAMEWORKS HARMED</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        /* ── AUTH GUARD ── */
+        const session = Auth.require();
+        if (!session) throw new Error('Redirecting');
+        const username = session.username;
+
+        /* Require portfolio unlock */
+        if (!Store.isPortfolioUnlocked(username)) {
+            navigate('home.html');
+            throw new Error('Portfolio not yet unlocked');
+        }
+
+        StarField.init();
+        Cursor.init();
+
+        /* ── POPULATE PLAYER DATA ── */
+        const hs       = Store.getHighScore(username);
+        const lastScore = Store.getLastScore(username);
+        const level    = LevelSystem.getLevel(hs);
+        const title    = LevelSystem.getTitle(hs);
+        const achs     = Store.getAchievements(username);
+
+        // Nav
+        document.getElementById('nav-player').textContent = username.toUpperCase();
+
+        // Hero card
+        document.getElementById('card-username').textContent = username.toUpperCase();
+
+        // Score ribbon
+        document.getElementById('rb-player').textContent = username.toUpperCase();
+        document.getElementById('rb-level').textContent  = level;
+        document.getElementById('rb-title').textContent  = title;
+        document.getElementById('rb-score').textContent  = lastScore;
+        document.getElementById('rb-hi').textContent     = hs;
+        document.getElementById('rb-ach').textContent    = achs.length + '/' + Achievements.list.length;
+
+        // About panel
+        document.getElementById('abt-level').textContent = 'LEVEL ' + level;
+        document.getElementById('abt-title').textContent = title;
+        document.getElementById('abt-hs').textContent    = hs;
+        document.getElementById('abt-ach').textContent   = achs.length + '/' + Achievements.list.length;
+
+        /* ── ACHIEVEMENTS GRID ── */
+        const grid = document.getElementById('ach-grid');
+        Achievements.list.forEach(a => {
+            const earned = achs.includes(a.id);
+            grid.innerHTML += `
+                <div class="ach-card ${earned ? 'earned' : ''}">
+                    <div class="ach-icon">${a.icon}</div>
+                    <div class="ach-info">
+                        <div class="ach-title">${a.title}</div>
+                        <div class="ach-desc">${earned ? a.desc : '???'}</div>
+                    </div>
+                </div>`;
+        });
+
+        /* ── SMOOTH SCROLL ── */
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(a.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

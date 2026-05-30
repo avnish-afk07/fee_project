@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Game — Login</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+
+        .auth-wrap {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 440px;
+            padding: 24px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .auth-logo h1 {
+            font-size: 1.6rem;
+            color: transparent;
+            -webkit-text-stroke: 2px var(--neon-cyan);
+            text-shadow: 4px 4px 0 var(--neon-purple);
+            animation: glitch 3s infinite alternate;
+            line-height: 1.4;
+        }
+
+        .auth-logo p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-family: var(--pixel-font);
+            animation: blink 1.2s infinite;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            border: 2px solid rgba(51, 204, 255, 0.25);
+            border-radius: 8px;
+            padding: 36px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 0 40px rgba(51, 204, 255, 0.08), 0 0 80px rgba(188, 19, 254, 0.05);
+        }
+
+        .auth-card h2 {
+            font-size: 0.8rem;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .auth-footer a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+            font-family: var(--pixel-font);
+            font-size: 0.6rem;
+        }
+
+        .auth-footer a:hover { text-shadow: 0 0 8px var(--neon-cyan); }
+
+        .auth-card .rpg-btn { width: 100%; text-align: center; }
+
+        /* Corner decorations */
+        .auth-card {
+            position: relative;
+        }
+        .auth-card::before,
+        .auth-card::after {
+            content: '◈';
+            position: absolute;
+            color: var(--neon-purple);
+            font-size: 18px;
+            opacity: 0.6;
+        }
+        .auth-card::before { top: 10px; left: 14px; }
+        .auth-card::after  { bottom: 10px; right: 14px; }
+    </style>
+</head>
+<body>
+    <div id="cursor-wisp"></div>
+    <div id="cursor-trail"></div>
+
+    <div class="auth-wrap">
+        <div class="auth-logo">
+            <h1>PORTFOLIO<br>GAME</h1>
+            <p>▶ INSERT CREDENTIALS TO PLAY ◀</p>
+        </div>
+
+        <div class="auth-card">
+            <h2>// PLAYER LOGIN</h2>
+
+            <div id="login-alert" class="alert error"></div>
+
+            <div class="form-group">
+                <label for="username">USERNAME</label>
+                <input type="text" id="username" placeholder="Enter your username" autocomplete="off" spellcheck="false">
+            </div>
+
+            <div class="form-group">
+                <label for="password">PASSWORD</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+
+            <button class="rpg-btn" id="login-btn" onclick="doLogin()">BOOT UP ▶</button>
+        </div>
+
+        <div class="auth-footer">
+            <span>No account yet? </span>
+            <a href="signup.html">SIGN UP HERE</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Redirect if already logged in
+        const session = Store.getSession();
+        if (session) navigate('home.html');
+
+        StarField.init();
+        Cursor.init();
+
+        function doLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const alert    = document.getElementById('login-alert');
+            const btn      = document.getElementById('login-btn');
+
+            alert.classList.remove('show');
+
+            if (!username || !password) {
+                showAlert(alert, 'All fields are required.');
+                return;
+            }
+
+            btn.textContent = 'LOADING...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                const result = Auth.login(username, password);
+                if (result.error) {
+                    showAlert(alert, result.error);
+                    btn.textContent = 'BOOT UP ▶';
+                    btn.disabled = false;
+                } else {
+                    // First login achievement
+                    Achievements.award(result.user.username, 'first_login');
+                    setTimeout(() => navigate('home.html'), 600);
+                }
+            }, 400);
+        }
+
+        function showAlert(el, msg) {
+            el.textContent = msg;
+            el.classList.add('show');
+        }
+
+        // Enter key support
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter') doLogin();
+        });
+    </script>
+</body>
+</html>
